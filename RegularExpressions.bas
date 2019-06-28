@@ -21,6 +21,8 @@ Public Function GetRegexGroups(sInput As String, sPattern As String, _
 
     If oRegexResults.Count <> 0 Then
         ReDim asMatches(oRegexResults.Count - 1)
+    Else
+        ReDim asMatches(0)
     End If
 
     For i = 0 To oRegexResults.Count - 1
@@ -42,7 +44,7 @@ Public Function Regex(sInput As String, sPattern As String, _
 
     Dim asMatches As Variant
 
-    asMatches = GetRegexGroups(sInput, sPattern, (lGlobal), (lIgnoreCase), _
+    asMatches = ExecuteRegex(sInput, sPattern, (lGlobal), (lIgnoreCase), _
         (lMultiLine))
 
     Regex = ""
@@ -55,3 +57,51 @@ End Function
 
 
 
+
+Public Function ExecuteRegex(sInput As String, sPattern As String, _
+    Optional lGlobal As Boolean = True, Optional lIgnoreCase As Boolean = True, _
+    Optional lMultiLine As Boolean = True) As Variant
+
+    Dim oRegex As New RegExp
+    Dim oRegexMatches As Object
+    Dim nItems As Integer
+    Dim asMatches() As String
+
+    With oRegex
+        .Global = lGlobal
+        .IgnoreCase = lIgnoreCase
+        .MultiLine = lMultiLine
+        .Pattern = sPattern
+
+        Set oRegexMatches = .Execute(sInput)
+    End With
+
+    nItems = 0
+    nId = 0
+    For Each oMatch In oRegexMatches
+        If oMatch.SubMatches.Count = 0 Then
+            nItems = nItems + 1
+        Else
+            nItems = nItems + oMatch.SubMatches.Count
+        End If
+    Next
+
+    If nItems <> 0 Then
+        ReDim asMatches(nItems - 1)
+        For Each oMatch In oRegexMatches
+            If oMatch.SubMatches.Count = 0 Then
+                asMatches(nId) = oMatch.Value
+            Else
+                For Each sSubMatch In oMatch.SubMatches
+                    asMatches(nId) = sSubMatch
+                    nId = nId + 1
+                Next
+                nId = nId - 1
+            End If
+
+            nId = nId + 1
+        Next
+    End If
+
+    ExecuteRegex = asMatches
+End Function
