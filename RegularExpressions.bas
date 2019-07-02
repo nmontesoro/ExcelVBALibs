@@ -36,7 +36,7 @@ End Function
 
 
 ' Regex
-'   Wrapper for GetRegexGroups. Returns matches as "match_1|match_2|...|match_n",
+'   Wrapper for ExecuteRegex. Returns matches as "match_1|match_2|...|match_n",
 '   or an empty string if there are none. Can be used as an Excel formula.
 Public Function Regex(sInput As String, sPattern As String, _
     Optional lIgnoreCase As Boolean = True, Optional lGlobal = True, _
@@ -58,6 +58,9 @@ End Function
 
 
 
+' ExecuteRegex
+'   Returns an array containing all matches or submatches for a Regular
+'   Expression. If there are none, said array will be empty.
 Public Function ExecuteRegex(sInput As String, sPattern As String, _
     Optional lGlobal As Boolean = True, Optional lIgnoreCase As Boolean = True, _
     Optional lMultiLine As Boolean = True) As Variant
@@ -101,6 +104,9 @@ Public Function ExecuteRegex(sInput As String, sPattern As String, _
 
             nId = nId + 1
         Next
+    Else
+        ' Workaround. Creates an empty, iterable array
+        asMatches = Split("", ".")
     End If
 
     ExecuteRegex = asMatches
