@@ -91,8 +91,13 @@ End Sub
 '                       separated by commas.
 '               sCriteria: String containing the criteria for each field. Only supports
 '                       one per field.
-'               sRng: Range, in A1-style notation.
-Public Sub ApplyFilter(sFields As String, sCriteria As String, sRng As String)
+'
+'               *Must use at least one of these*
+'               [sRng]: Range, in A1-style notation.
+'               [oRng]: Range, as Range.
+Public Sub ApplyFilter(sFields As String, sCriteria As String, _
+    Optional sRng As String = "", Optional oRng As Range)
+
     Dim asFields As Variant, asCriteria As Variant
     Dim i As Integer, nColNo As Integer
 
@@ -104,7 +109,11 @@ Public Sub ApplyFilter(sFields As String, sCriteria As String, sRng As String)
         Exit Sub
     End If
 
-    With ActiveSheet.Range(sRng)
+    If sRng <> "" Then
+        oRng = Range(sRng)
+    End If
+
+    With oRng
         For i = 0 To UBound(asFields)
             nColNo = GetColumnNumberByName(CStr(asFields(i)))
             If nColNo <> 0 Then
